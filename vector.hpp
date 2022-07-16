@@ -344,7 +344,7 @@ namespace ft
 		{
 			this->_alloc.destroy(&this->_data[this->_size - 1]);
 			this->_size--;
-		}
+		}	
 
 		//[4] insert
 		// single element
@@ -429,41 +429,7 @@ namespace ft
 					this->push_back(val);
 				return;
 			}
-			for (iterator it = position; it != this->end(); it++)
-				tmp_size++;
-			tmp = this->_alloc.allocate(tmp_size);
-			i = 0;
-			for (iterator it = position; it != this->end(); it++)
-			{
-				this->_alloc.construct(&tmp[i], *it);
-				this->_alloc.destroy(&*it);
-				i++;
-			}
-			// reallocation
-			if ((this->_size + n) > this->_capacity)
-			{
-				if ((this->_size + n) > (this->_capacity * 2))
-					new_capacity = this->_size + n;
-				else
-					new_capacity = this->_capacity * 2;
-				if (new_capacity > this->max_size())
-					throw std::length_error("vector");
-				new_data = this->_alloc.allocate(new_capacity);
-				if (this->_data)
-				{
-					i = 0;
-					for (iterator it = this->begin(); it != position; it++)
-					{
-						this->_alloc.construct(&new_data[i], *it);
-						this->_alloc.destroy(&*it);
-						i++;
-					}
-					this->_alloc.deallocate(this->_data, this->_capacity);
-				}
-				this->_capacity = new_capacity;
-				this->_data = new_data;
-				position = iterator(&this->_data[i]);
-			}
+			        
 			// insert
 			it = position;
 			for (i = 0; i < n; i++)
@@ -638,7 +604,6 @@ namespace ft
 			return first;
 		}
 
-
 		void swap(vector &x)
 		{
 			pointer tmp_data = this->_data;
@@ -707,7 +672,6 @@ namespace ft
 
 	// template <class T, class Alloc = allocator<T>>
 	// class vector; // generic template
-	
 
 }
 

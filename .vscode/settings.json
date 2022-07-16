@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "vector": "cpp",
+        "iostream": "cpp",
+        "stdexcept": "cpp",
+        "__functional_03": "cpp",
+        "__hash_table": "cpp",
+        "__split_buffer": "cpp",
+        "memory_resource": "cpp",
+        "functional": "cpp",
+        "memory": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp"
+    }
+}
