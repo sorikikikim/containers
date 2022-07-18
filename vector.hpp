@@ -346,134 +346,278 @@ namespace ft
 			this->_size--;
 		}
 
-		void copy_before_position()
-		{
-			for (iterator it = position; it != this->end(); it++)
-				tmp_size++;
-			tmp = this->_alloc.allocate(tmp_size);
-			i = 0;
-			for (iterator it = position; it != this->end(); it++)
-			{
-				this->_alloc.construct(&tmp[i], *it);
-				this->_alloc.destroy(&*it);
-				i++;
-			}
-		}
+		// //[4] insert
+		// // single element
+		// iterator insert(iterator position, const value_type &val)
+		// {
+		// 	pointer new_data;
+		// 	size_type new_capacity;
+		// 	size_type reallocate_index = 0;
+		// 	iterator ret_position;
 
-		void reallocate_vector(pointer new_data, size_type new_capacity, size_type n)
-		{
-			if ((this->_size + n) > this->_capacity)
+		// 	if (position == this->end())
+		// 	{
+		// 		this->push_back(val);
+		// 		position = this->end() - 1;
+		// 	}
+		// 	else
+		// 	{
+		// 		if (this->_capacity >= this->_size + 1)
+		// 		{
+		// 			for (iterator it = this->end() - 1; it != position - 1; it--)
+		// 			{
+		// 				this->_alloc.construct((it + 1).getPtr(), *it);
+		// 				this->_alloc.destroy(&*it);
+		// 			}
+		// 			this->_alloc.construct(&*position, val);
+		// 			this->_size++;
+		// 		}
+		// 		else // reallocate
+		// 		{
+		// 			new_capacity = _capacity * 2;
+		// 			new_data = this->_alloc.allocate(new_capacity);
+		// 			// 1. copy before position
+
+		// 			for (iterator it = this->begin(); it != position; it++)
+		// 			{
+		// 				this->_alloc.construct(&new_data[reallocate_index], *it);
+		// 				this->_alloc.destroy(&*it);
+		// 				reallocate_index++;
+		// 			} // reallocate_index == position
+
+		// 			// 2. insert position
+		// 			this->_alloc.construct(&new_data[reallocate_index], val);
+		// 			ret_position = iterator(&new_data[reallocate_index]);
+		// 			reallocate_index++;
+		// 			// 3. copy after position
+		// 			for (iterator it = position; it != this->end(); it++)
+		// 			{
+		// 				this->_alloc.construct(&new_data[reallocate_index], *it);
+		// 				reallocate_index++;
+		// 				this->_alloc.destroy(&*it);
+		// 			}
+
+		// 			// deallocate original data
+		// 			this->_alloc.deallocate(_data, _size);
+		// 			this->_data = new_data;
+		// 			this->_capacity = new_capacity;
+		// 			this->_size += 1;
+
+		// 			// change position indicates
+		// 			position = ret_position;
+		// 		}
+		// 	}
+		// 	return position;
+		// }
+
+		// // fill
+		// void insert(iterator position, size_type n, const value_type &val)
+		// {
+		// 	pointer new_data;
+		// 	size_type reallocate_index = 0;
+		// 	size_type new_capacity;
+
+		// 	if (position == this->end())
+		// 	{
+		// 		for (size_type i = 0; i < n; i++)
+		// 			this->push_back(val);
+		// 		return;
+		// 	}
+		// 	if (this->_capacity >= this->_size + n)
+		// 	{
+		// 		for (iterator it = this->end() - 1; it != position - 1; it--)
+		// 		{
+		// 			this->_alloc.construct((it + n).getPtr(), *it);
+		// 			this->_alloc.destroy(&*it);
+		// 		}
+		// 		for (iterator it = position; it != position + n; it++)
+		// 		{
+		// 			this->_alloc.construct(&*it, val);
+		// 			this->_size++;
+		// 		}
+		// 	}
+		// 	else // reallocate
+		// 	{
+		// 		if ((this->_size + n) > (this->_capacity * 2))
+		// 			new_capacity = this->_size + n;
+		// 		else
+		// 			new_capacity = this->_capacity * 2;
+
+		// 		new_data = this->_alloc.allocate(new_capacity);
+
+		// 		// copy before position
+		// 		for (iterator it = this->begin(); it != position; it++)
+		// 		{
+		// 			this->_alloc.construct(&new_data[reallocate_index], *it);
+		// 			this->_alloc.destroy(&*it);
+		// 			reallocate_index++;
+		// 		}
+		// 		// insert position
+		// 		for (size_type i = 0; i < n; i++)
+		// 		{
+		// 			this->_alloc.construct(&*new_data[reallocate_index], val);
+		// 			reallocate_index++;
+		// 		}
+
+		// 		// copy after position
+		// 		for (iterator it = position; it != this->end(); it++)
+		// 		{
+		// 			this->_alloc.construct(&new_data[reallocate_index], *it);
+		// 			reallocate_index++;
+		// 			this->_alloc.destroy(&*it);
+		// 		}
+
+		// 		// deallocate original data
+		// 		this->_alloc.deallocate(_data, _size);
+		// 		this->_data = new_data;
+		// 		this->_capacity = new_capacity;
+		// 		this->_size += n;
+		// 	}
+		// }
+
+		iterator insert(iterator position, const value_type& val)
 			{
-				if ((this->_size + n) > (this->_capacity * 2))
-					new_capacity = this->_size + n;
-				else
-					new_capacity = this->_capacity * 2;
-				//allocator가 처리
-				// if (new_capacity > this->max_size())
-				// 	throw std::length_error("vector");
-				new_data = this->_alloc.allocate(new_capacity);
-				if (this->_data)
+				pointer		newData;
+				pointer		tmp;
+				size_type	tmpSize = 0;
+				size_type	i;
+				size_type	newCapacity;
+
+				if (position == this->end())
 				{
+					this->push_back(val);
+					position = this->end() - 1;
+				}
+				else
+				{
+					for (iterator it = position; it != this->end(); it++)
+						tmpSize++;
+					tmp = this->_alloc.allocate(tmpSize);
 					i = 0;
-					for (iterator it = this->begin(); it != position; it++)
+					for (iterator it = position; it != this->end(); it++)
 					{
-						this->_alloc.construct(&new_data[i], *it);
+						this->_alloc.construct(&tmp[i], *it);
 						this->_alloc.destroy(&*it);
 						i++;
 					}
-					this->_alloc.deallocate(this->_data, this->_capacity);
+					// reallocation:
+					if (this->_size == this->_capacity)
+					{
+						newCapacity = this->_capacity * 2;
+						if (newCapacity > this->max_size())
+							throw std::length_error("vector");
+						newData = this->_alloc.allocate(newCapacity);
+						if (this->_data)
+						{
+							i = 0;
+							for (iterator it = this->begin(); it != position; it++)
+							{
+								this->_alloc.construct(&newData[i], *it);
+								this->_alloc.destroy(&*it);
+								i++;
+							}	
+							this->_alloc.deallocate(this->_data, this->_capacity);
+						}
+						this->_capacity = newCapacity;
+						this->_data = newData;
+						position = iterator(&this->_data[i]);
+					}
+					// insert:
+					this->_alloc.construct(&*position, val);
+					this->_size++;
+					// copy the after-insert part:
+					i = 0;
+					for (iterator it = position + 1; it != this->end(); it++)
+					{
+						this->_alloc.construct(&*it, tmp[i]);
+						i++;
+					}
+					// free tmp:
+					for (i = 0; i < tmpSize; i++)
+						this->_alloc.destroy(&tmp[i]);
+					this->_alloc.deallocate(tmp, tmpSize);
 				}
-				this->_capacity = new_capacity;
-				this->_data = new_data;
-				position = iterator(&this->_data[i]);
+				return position;
 			}
-		}
 
-		//[4] insert
-		// single element
-		iterator insert(iterator position, const value_type &val)
-		{
-			pointer new_data;
-			pointer tmp;
-			size_type tmp_size = 0;
-			size_type i;
-			size_type new_capacity;
+			void insert(iterator position, size_type n, const value_type& val)
+			{
+				pointer		newData;
+				pointer		tmp;
+				iterator	it;
+				size_type	tmpSize = 0;
+				size_type	i;
+				size_type	newCapacity;
 
-			if (position == this->end())
-			{
-				this->push_back(val);
-				position = this->end() - 1;
-			}
-			else
-			{
-				copy_before_position();
-				// reallocation
-				reallocate_vector(new_data, new_capacity, 0);
-				// insert
-				this->_alloc.construct(&*position, val);
-				this->_size++;
-				// copy after insert
+				if (position == this->end())
+				{
+					for (size_type i = 0; i < n; i++)
+						this->push_back(val);
+					return;
+				}
+				for (iterator it = position; it != this->end(); it++)
+					tmpSize++;
+				tmp = this->_alloc.allocate(tmpSize);
 				i = 0;
-				for (iterator it = position + 1; it != this->end(); it++)
+				for (iterator it = position; it != this->end(); it++)
+				{
+					this->_alloc.construct(&tmp[i], *it);
+					this->_alloc.destroy(&*it);
+					i++;
+				}
+				// reallocation:
+				if ((this->_size + n) > this->_capacity)
+				{
+					if ((this->_size + n) > (this->_capacity * 2))
+						newCapacity = this->_size + n;
+					else
+						newCapacity = this->_capacity * 2;
+					if (newCapacity > this->max_size())
+						throw std::length_error("vector");
+					newData = this->_alloc.allocate(newCapacity);
+					if (this->_data)
+					{
+						i = 0;
+						for (iterator it = this->begin(); it != position; it++)
+						{
+							this->_alloc.construct(&newData[i], *it);
+							this->_alloc.destroy(&*it);
+							i++;
+						}
+						this->_alloc.deallocate(this->_data, this->_capacity);
+					}
+					this->_capacity = newCapacity;
+					this->_data = newData;
+					position = iterator(&this->_data[i]);
+				}
+				// insert:
+				it = position;
+				for (i = 0; i < n; i++)
+				{
+					this->_alloc.construct(&*it, val);
+					this->_size++;
+					it++;
+				}
+				// copy the after-insert part:
+				i = 0;
+				for (it = position + n; it != this->end(); it++)
 				{
 					this->_alloc.construct(&*it, tmp[i]);
 					i++;
 				}
-				// free
-				for (i = 0; i < tmp_size; i++)
+				// free tmp:
+				for (i = 0; i < tmpSize; i++)
 					this->_alloc.destroy(&tmp[i]);
-				this->_alloc.deallocate(tmp, tmp_size);
+				this->_alloc.deallocate(tmp, tmpSize);
 			}
-			return position;
-		}
-
-		// fill
-		void insert(iterator position, size_type n, const value_type &val)
-		{
-			pointer new_data;
-			pointer tmp;
-			iterator it;
-			size_type tmp_size = 0;
-			size_type i;
-			size_type new_capacity;
-
-			if (position == this->end())
-			{
-				for (size_type i = 0; i < n; i++)
-					this->push_back(val);
-				return;
-			}
-			copy_before_position();
-			// reallocation
-			reallocate_vector(new_data, new_capacity, n);
-			// insert
-			it = position;
-			for (i = 0; i < n; i++)
-			{
-				this->_alloc.construct(&*it, val);
-				this->_size++;
-				it++;
-			}
-			// copy after insert
-			i = 0;
-			for (it = position + n; it != this->end(); it++)
-			{
-				this->_alloc.construct(&*it, tmp[i]);
-				i++;
-			}
-			// free
-			for (i = 0; i < tmp_size; i++)
-				this->_alloc.destroy(&tmp[i]);
-			this->_alloc.deallocate(tmp, tmp_size);
-		}
 
 		template <class InputIterator>
 		void insert(iterator position, InputIterator first, InputIterator last,
 					typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
 		{
 			pointer new_data;
-			pointer tmp;
 			iterator it;
+			pointer tmp;
 			size_type tmp_size = 0;
 			size_type i;
 			size_type new_capacity;
@@ -560,12 +704,14 @@ namespace ft
 				tmp_size++;
 			tmp = this->_alloc.allocate(tmp_size);
 			i = 0;
+
 			for (iterator it = position + 1; it != this->end(); it++)
 			{
 				this->_alloc.construct(&tmp[i], *it);
 				this->_alloc.destroy(&*it);
 				i++;
 			}
+
 			// erase
 			this->_alloc.destroy(&*position);
 			this->_size--;
@@ -652,8 +798,6 @@ namespace ft
 		{
 			return this->_alloc;
 		}
-
-		v
 	};
 
 	/*
@@ -689,6 +833,46 @@ namespace ft
 	// template <class T, class Alloc = allocator<T>>
 	// class vector; // generic template
 
+	template <class T, class Alloc>
+	bool operator==(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
+	{
+		if (lhs.size() != rhs.size())
+		{
+			return false;
+		}
+		return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+	};
+
+	template <class T, class Alloc>
+	bool operator!=(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
+	{
+		return !(lhs == rhs);
+	};
+
+	template <class T, class Alloc>
+	bool operator<(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
+	{
+		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
+										   rhs.end());
+	};
+
+	template <class T, class Alloc>
+	bool operator<=(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
+	{
+		return (!(rhs < lhs));
+	};
+
+	template <class T, class Alloc>
+	bool operator>(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
+	{
+		return (rhs < lhs);
+	};
+
+	template <class T, class Alloc>
+	bool operator>=(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
+	{
+		return (!(lhs < rhs));
+	};
 }
 
 #endif
