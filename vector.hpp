@@ -2,7 +2,7 @@
 #define VECTOR_HPP
 
 #include <iostream>
-#include <vector>
+#include "iterator"
 #include "randomAccessIterator.hpp"
 #include "reverseIterator.hpp"
 #include "utils.hpp"
@@ -20,7 +20,8 @@ namespace ft
 		typedef typename allocator_type::const_reference const_reference;
 		typedef typename allocator_type::pointer pointer;
 		typedef typename allocator_type::const_pointer const_pointer;
-		typedef typename allocator_type::size_type size_type;
+		//typedef typename allocator_type::size_type size_type;
+		typedef size_t size_type;
 		typedef ft::random_access_iterator<value_type> iterator;
 		typedef ft::random_access_iterator<const value_type> const_iterator;
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
@@ -38,7 +39,7 @@ namespace ft
 		** ------------------------------- CONSTRUCTOR --------------------------------
 		*/
 		// default
-		explicit vector(const allocator_type &alloc = allocator_type())
+		explicit vector(const allocator_type& alloc = allocator_type())
 		{
 			this->_size = 0;
 			this->_capacity = 0;
@@ -101,12 +102,12 @@ namespace ft
 				this->_alloc.deallocate(this->_data, this->_capacity);
 			}
 		}
-
+	
 		/*
 		** --------------------------------- operator= ---------------------------------
 		*/
 
-		vector &operator=(const vector &x)
+		vector &operator=(const vector& x)
 		{
 			if (this != &x)
 			{
@@ -475,13 +476,16 @@ namespace ft
 		// 	}
 		// }
 
+
+		//[4] insert
+		// single element
 		iterator insert(iterator position, const value_type& val)
 			{
-				pointer		newData;
+				pointer		new_data;
 				pointer		tmp;
-				size_type	tmpSize = 0;
+				size_type	tmp_size = 0;
 				size_type	i;
-				size_type	newCapacity;
+				size_type	new_capacity;
 
 				if (position == this->end())
 				{
@@ -491,8 +495,8 @@ namespace ft
 				else
 				{
 					for (iterator it = position; it != this->end(); it++)
-						tmpSize++;
-					tmp = this->_alloc.allocate(tmpSize);
+						tmp_size++;
+					tmp = this->_alloc.allocate(tmp_size);
 					i = 0;
 					for (iterator it = position; it != this->end(); it++)
 					{
@@ -503,23 +507,23 @@ namespace ft
 					// reallocation:
 					if (this->_size == this->_capacity)
 					{
-						newCapacity = this->_capacity * 2;
-						if (newCapacity > this->max_size())
+						new_capacity = this->_capacity * 2;
+						if (new_capacity > this->max_size())
 							throw std::length_error("vector");
-						newData = this->_alloc.allocate(newCapacity);
+						new_data = this->_alloc.allocate(new_capacity);
 						if (this->_data)
 						{
 							i = 0;
 							for (iterator it = this->begin(); it != position; it++)
 							{
-								this->_alloc.construct(&newData[i], *it);
+								this->_alloc.construct(&new_data[i], *it);
 								this->_alloc.destroy(&*it);
 								i++;
 							}	
 							this->_alloc.deallocate(this->_data, this->_capacity);
 						}
-						this->_capacity = newCapacity;
-						this->_data = newData;
+						this->_capacity = new_capacity;
+						this->_data = new_data;
 						position = iterator(&this->_data[i]);
 					}
 					// insert:
@@ -533,21 +537,21 @@ namespace ft
 						i++;
 					}
 					// free tmp:
-					for (i = 0; i < tmpSize; i++)
+					for (i = 0; i < tmp_size; i++)
 						this->_alloc.destroy(&tmp[i]);
-					this->_alloc.deallocate(tmp, tmpSize);
+					this->_alloc.deallocate(tmp, tmp_size);
 				}
 				return position;
 			}
 
 			void insert(iterator position, size_type n, const value_type& val)
 			{
-				pointer		newData;
+				pointer		new_data;
 				pointer		tmp;
 				iterator	it;
-				size_type	tmpSize = 0;
+				size_type	tmp_size = 0;
 				size_type	i;
-				size_type	newCapacity;
+				size_type	new_capacity;
 
 				if (position == this->end())
 				{
@@ -556,8 +560,8 @@ namespace ft
 					return;
 				}
 				for (iterator it = position; it != this->end(); it++)
-					tmpSize++;
-				tmp = this->_alloc.allocate(tmpSize);
+					tmp_size++;
+				tmp = this->_alloc.allocate(tmp_size);
 				i = 0;
 				for (iterator it = position; it != this->end(); it++)
 				{
@@ -569,25 +573,25 @@ namespace ft
 				if ((this->_size + n) > this->_capacity)
 				{
 					if ((this->_size + n) > (this->_capacity * 2))
-						newCapacity = this->_size + n;
+						new_capacity = this->_size + n;
 					else
-						newCapacity = this->_capacity * 2;
-					if (newCapacity > this->max_size())
+						new_capacity = this->_capacity * 2;
+					if (new_capacity > this->max_size())
 						throw std::length_error("vector");
-					newData = this->_alloc.allocate(newCapacity);
+					new_data = this->_alloc.allocate(new_capacity);
 					if (this->_data)
 					{
 						i = 0;
 						for (iterator it = this->begin(); it != position; it++)
 						{
-							this->_alloc.construct(&newData[i], *it);
+							this->_alloc.construct(&new_data[i], *it);
 							this->_alloc.destroy(&*it);
 							i++;
 						}
 						this->_alloc.deallocate(this->_data, this->_capacity);
 					}
-					this->_capacity = newCapacity;
-					this->_data = newData;
+					this->_capacity = new_capacity;
+					this->_data = new_data;
 					position = iterator(&this->_data[i]);
 				}
 				// insert:
@@ -606,9 +610,9 @@ namespace ft
 					i++;
 				}
 				// free tmp:
-				for (i = 0; i < tmpSize; i++)
+				for (i = 0; i < tmp_size; i++)
 					this->_alloc.destroy(&tmp[i]);
-				this->_alloc.deallocate(tmp, tmpSize);
+				this->_alloc.deallocate(tmp, tmp_size);
 			}
 
 		template <class InputIterator>

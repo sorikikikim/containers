@@ -9,11 +9,12 @@ int main()
 {
 	ft::vector<int> v1;
 	vector<int> v2;
-
+	
+	
 	// fill the array with 10 five times
 	v1.assign(5, 10);
 	v2.assign(5, 10);
-
+	ft::vector<int> tmp(v1);
 	cout << "prints the vector " << endl;
 	cout << endl;
 	cout << "The vector elements in v1 are: ";
