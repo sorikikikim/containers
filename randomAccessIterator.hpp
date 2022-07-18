@@ -190,6 +190,21 @@ namespace ft
 	{
 		return lhs.getPtr() - rhs.getPtr();
 	}
+
+	template <class T>
+	random_access_iterator<T> operator+(random_access_iterator<T> lhs, typename random_access_iterator<T>::difference_type rhs)
+	{
+		lhs += rhs;
+		return lhs;
+	}
+
+
+	template <class T>
+	random_access_iterator<T> operator-(random_access_iterator<T> lhs, typename random_access_iterator<T>::difference_type rhs)
+	{
+		lhs -= rhs;
+		return lhs;
+	}
 }
 
 #endif

@@ -14,7 +14,10 @@ int main()
 	// fill the array with 10 five times
 	v1.assign(5, 10);
 	v2.assign(5, 10);
-	ft::vector<int> tmp(v1);
+
+	ft::vector<int> tmp1(v1);
+	vector<int> tmp2(v2);
+	
 	cout << "prints the vector " << endl;
 	cout << endl;
 	cout << "The vector elements in v1 are: ";
