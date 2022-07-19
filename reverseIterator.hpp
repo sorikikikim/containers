@@ -9,12 +9,12 @@ namespace ft
 	class reverse_iterator
 	{
 	public:
-		typedef Iterator 												iterator_type;
-		typedef typename iterator_traits<Iterator>::value_type 			value_type;
-		typedef typename iterator_traits<Iterator>::difference_type 	difference_type;
-		typedef typename iterator_traits<Iterator>::pointer 			pointer;
-		typedef typename iterator_traits<Iterator>::reference 			reference;
-		typedef typename iterator_traits<Iterator>::iterator_category	iterator_category;
+		typedef Iterator iterator_type;
+		typedef typename iterator_traits<Iterator>::value_type value_type;
+		typedef typename iterator_traits<Iterator>::difference_type difference_type;
+		typedef typename iterator_traits<Iterator>::pointer pointer;
+		typedef typename iterator_traits<Iterator>::reference reference;
+		typedef typename iterator_traits<Iterator>::iterator_category iterator_category;
 
 	private:
 		iterator_type _base_iter;
@@ -24,16 +24,15 @@ namespace ft
 		*/
 
 	public:
-		//default constructor
+		// default constructor
 		reverse_iterator() : _base_iter(iterator_type()) {}
 
-		//initialization
+		// initialization
 		explicit reverse_iterator(iterator_type it) : _base_iter(it) {}
 
-		//copy constructor
+		// copy constructor
 		template <class Iter>
 		reverse_iterator(const reverse_iterator<Iter> &rev_it) : _base_iter(rev_it.base()) {}
-
 
 		/*
 		** -------------------------------- Getter ---------------------------------
@@ -47,6 +46,12 @@ namespace ft
 		/*
 		** ------------------------------- Operators --------------------------------
 		*/
+
+		// template <class Iter>
+		// reverse_iterator &operator=(const reverse_iterator<Iter> &rev_it) 
+		// {
+
+		// }
 
 		reference operator*() const
 		{
@@ -112,7 +117,6 @@ namespace ft
 		{
 			return this->_base_iter[-n - 1];
 		}
-
 	};
 
 	template <class Iterator>

@@ -46,8 +46,8 @@ namespace ft
 		public:
 			typedef T 							value_type;
 			typedef ptrdiff_t 					difference_type;
-			typedef T							*pointer;
-			typedef T							&reference;
+			typedef T*							pointer;
+			typedef T&							reference;
 			typedef random_access_iterator_tag	iterator_category;
 	};
 
@@ -57,8 +57,8 @@ namespace ft
 		public:
 			typedef T							value_type;	
 			typedef ptrdiff_t					difference_type;
-			typedef T							*pointer;
-			typedef T							&reference;
+			typedef const T*					pointer;
+			typedef const T&					reference;
 			typedef random_access_iterator_tag	iterator_category;
 	};
 

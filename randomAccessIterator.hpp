@@ -10,11 +10,11 @@ namespace ft
 	class random_access_iterator
 	{
 	public:
-		typedef typename iterator_traits<T *>::value_type value_type;
-		typedef typename iterator_traits<T *>::difference_type difference_type;
-		typedef typename iterator_traits<T *>::pointer pointer;
-		typedef typename iterator_traits<T *>::reference reference;
-		typedef typename iterator_traits<T *>::iterator_category iterator_category;
+		typedef typename iterator_traits<T *>::value_type 			value_type;
+		typedef typename iterator_traits<T *>::difference_type 		difference_type;
+		typedef typename iterator_traits<T *>::pointer 				pointer;
+		typedef typename iterator_traits<T *>::reference 			reference;//const int&
+		typedef typename iterator_traits<T *>::iterator_category	iterator_category;
 
 		/*
 		** ------------------------------- CONSTRUCTOR --------------------------------
@@ -63,7 +63,7 @@ namespace ft
 		/*
 		** ------------------------------- Operators --------------------------------
 		*/
-
+	
 		random_access_iterator &operator++()
 		{
 			this->_ptr++;
