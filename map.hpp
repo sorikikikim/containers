@@ -10,7 +10,7 @@ namespace ft
 		class Key,									// map::key_type
 		class T,									// map::mapped_type
 		class Compare = ft::less<Key>,				// map::key_compare
-		class Alloc = allocator<pair<const Key, T>> // map::allocator_type
+		class Alloc = std::allocator<pair<const Key, T> > // map::allocator_type
 		>
 	class map
 	{

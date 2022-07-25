@@ -4,9 +4,7 @@
 namespace ft
 {
 	template <bool cond, typename T = void>
-	struct enable_if
-	{
-	};
+	struct enable_if {};
 
 	template <typename T>
 	struct enable_if<true, T>
@@ -26,85 +24,37 @@ namespace ft
 	typedef integral_constant<bool, true> true_type;
 	typedef integral_constant<bool, false> false_type;
 
-	template <class T>
-	struct is_integral : false_type
-	{
-	};
+	template <class T> struct is_integral : false_type {};
 
-	template <>
-	struct is_integral<bool> : true_type
-	{
-	};
+	template <> struct is_integral<bool> : true_type {};
 
-	template <>
-	struct is_integral<char> : true_type
-	{
-	};
+	template <> struct is_integral<char> : true_type {};
 
-	template <>
-	struct is_integral<char16_t> : true_type
-	{
-	};
+	template <> struct is_integral<char16_t> : true_type {};
 
-	template <>
-	struct is_integral<char32_t> : true_type
-	{
-	};
+	template <> struct is_integral<char32_t> : true_type {};
 
-	template <>
-	struct is_integral<wchar_t> : true_type
-	{
-	};
+	template <> struct is_integral<wchar_t> : true_type {};
 
-	template <>
-	struct is_integral<signed char> : true_type
-	{
-	};
+	template <> struct is_integral<signed char> : true_type {};
 
-	template <>
-	struct is_integral<short int> : true_type
-	{
-	};
+	template <> struct is_integral<short int> : true_type {};
 
-	template <>
-	struct is_integral<int> : true_type
-	{
-	};
+	template <> struct is_integral<int> : true_type {};
 
-	template <>
-	struct is_integral<long int> : true_type
-	{
-	};
+	template <> struct is_integral<long int> : true_type {};
 
-	template <>
-	struct is_integral<long long int> : true_type
-	{
-	};
+	template <> struct is_integral<long long int> : true_type {};
 
-	template <>
-	struct is_integral<unsigned char> : true_type
-	{
-	};
+	template <> struct is_integral<unsigned char> : true_type {};
 
-	template <>
-	struct is_integral<unsigned short int> : true_type
-	{
-	};
+	template <> struct is_integral<unsigned short int> : true_type {};
 
-	template <>
-	struct is_integral<unsigned int> : true_type
-	{
-	};
+	template <> struct is_integral<unsigned int> : true_type {};
 
-	template <>
-	struct is_integral<unsigned long int> : true_type
-	{
-	};
+	template <> struct is_integral<unsigned long int> : true_type {};
 
-	template <>
-	struct is_integral<unsigned long long int> : true_type
-	{
-	};
+	template <> struct is_integral<unsigned long long int> : true_type {};
 
 	template <class InputIterator1, class InputIterator2>
 	bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2)
@@ -230,7 +180,7 @@ namespace ft
 	}
 
 	template <class T>
-	struct less : binary_function<T, T, bool>
+	struct less : std::binary_function<T, T, bool>
 	{
 		bool operator()(const T &x, const T &y) const { return x < y; }
 	};
