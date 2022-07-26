@@ -38,13 +38,7 @@ namespace ft
 		** ------------------------------- CONSTRUCTOR --------------------------------
 		*/
 		// default
-		explicit vector(const allocator_type &alloc = allocator_type())
-		{
-			this->_size = 0;
-			this->_capacity = 0;
-			this->_alloc = alloc;
-			this->_data = 0;
-		}
+		explicit vector(const allocator_type &alloc = allocator_type()) : _size(0), _capacity(0), _alloc(alloc), _data(0) {}
 
 		// fill
 		explicit vector(size_type n, const value_type &val = value_type(),

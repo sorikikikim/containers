@@ -12,6 +12,17 @@
         "string": "cpp",
         "unordered_map": "cpp",
         "__node_handle": "cpp",
-        "iterator": "cpp"
+        "iterator": "cpp",
+        "__bit_reference": "cpp",
+        "__tree": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "initializer_list": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "string_view": "cpp",
+        "ios": "cpp",
+        "algorithm": "cpp"
     }
 }
