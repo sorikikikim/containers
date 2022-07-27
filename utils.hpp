@@ -123,12 +123,12 @@ namespace ft
 		typedef T1 first_type;
 		typedef T2 second_type;
 
-		first_type first;
+		first_type 	first;
 		second_type second;
 
 		pair() : first(), second() {}
 
-		// pair(const pair<U, V> &pr) : first(pr.first), second(pr.second) {}
+		pair(const pair<U, V> &pr) : first(pr.first), second(pr.second) {}
 
 		template <class U, class V>
 		pair(const pair<U, V> &pr) : first(pr.first), second(pr.second) {}

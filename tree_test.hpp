@@ -860,15 +860,20 @@ namespace ft
 			return prec;
 		}
 
+        // bool& created
 		node_type* findNode(node_type *root,  const key_type &key) const
 		{
-			if (!root)
+			if (!root){
+                // 새로 넣어야하는 경우
+                // created = true;
 				return NULL;
+            }
 			if (_key_comp(root->data->first, key))
 				return (findNode(root->right, key));
 			else if (_key_comp(key, root->data->first))
 				return (findNode(root->left, key));
-		
+            // 이미 있는 경우
+            // created = false;
 			return root;
 		}
 

@@ -5,44 +5,58 @@
 
 namespace ft
 {
-	template <typename Pair>
+	template <typename T>
 	struct Node
 	{
-	public:
-		typedef Pair	value_type;
+		//type define
+		typedef T	value_type;
 
 		//elements
-		value_type*		data;
-		Node*			parent;
-		Node*			left;
-		Node*			right;
-		int				height;
+		value_type*		_data;
+		Node*			_parent;
+		Node*			_left;
+		Node*			_right;
+		int				_height;
 	};
 
-	template <class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> > >
+	template <class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<Node<ft::pair<const Key, T> > > >
 	class AVLTree
 	{
 	private:
-		typedef Key			key_type;
-		typedef T			mapped_type;
 		typedef Compare		key_compare;
 		typedef Alloc		allocator_type;
 
 		typedef ft::pair<const Key, T>		value_type;
 		typedef Node<value_type> 			node_type;
 		typedef Node<value_type>*			node_pointer;
-		typedef std::allocator<node_type>	allocator_node;
+		typedef Alloc						allocator_node;
 
 	public:
-		allocator_type	_alloc;
+		//allocator_type	_alloc;
 		allocator_node	_alloc_node;
-		key_compare		_comp;
+		key_compare		_key_comp;
+		node_type*		_root;
 		
-		
-
-		Node<T>* create_node(value_type &data)
+		AVLTree() : _root(0) {}
+		AVLTree(const AVLTree &other) : _root(other._root) {}
+		AVLTree(node_type &root) : _root(root) {}
+		AVLTree &operator=(const AVLTree &other)
 		{
-			Node<T>* new_node = _alloc_node.allocate(1);
+			this->_alloc = other._alloc;
+			this->_alloc_node = other._alloc_node;
+			this->_comp = other._comp;
+			this->_root = other._root;
+		}
+		~AVLTree() 
+		{
+
+		}
+
+
+	private:
+		node_type* create_node(value_type &data)
+		{
+			node_type* new_node = _alloc_node.allocate(1);
 
 			_alloc.construct(new_node->_data, data);
 			new_node->_parent = 0;
@@ -53,14 +67,14 @@ namespace ft
 			return new_node;
 		}
 
-		int height(Node<T> *node)
+		int height(node_type* node)
 		{
 			if (node == NULL)
 				return 0;
 			return node->_height;
 		}
 
-		int get_balance_factor(Node<T> *node)
+		int get_balance_factor(node_type *node)
 		{
 			if (node == NULL)
 				return 0;
@@ -72,9 +86,9 @@ namespace ft
 			return (a > b) ? a : b;
 		}
 
-		Node<T> *find_max_node(Node<T> *node)
+		node_type *find_max_node(node_type *node)
 		{
-			Node<T> *max = node;
+			node_type *max = node;
 
 			if (!max)
 				return NULL;
@@ -85,9 +99,9 @@ namespace ft
 			return max;
 		}
 
-		Node<T> *find_min_node(Node<T> *node)
+		node_type *find_min_node(node_type *node)
 		{
-			Node<T> *min = node;
+			node_type *min = node;
 
 			if (!min)
 				return NULL;
@@ -107,10 +121,11 @@ namespace ft
 		//            / \                                  / \           |
 		//           A   B                                B   C          |
 
-		Node<T> *right_rotate(Node<T> *y)
+
+		node_type *right_rotate(node_type *y)
 		{
-			Node<T> *x = y->_left;
-			Node<T> *tmp = x->_right;
+			node_type *x = y->_left;
+			node_type *tmp = x->_right;
 
 			x->_right = y;
 			y->_left = tmp;
@@ -121,10 +136,10 @@ namespace ft
 			return x;
 		}
 
-		Node<T> *left_rotate(Node<T> *x)
+		node_type *left_rotate(node_type *x)
 		{
-			Node<T> *y = x->_right;
-			Node<T> *tmp = y->_left;
+			node_type *y = x->_right;
+			node_type *tmp = y->_left;
 
 			y->_left = x;
 			y->_right = tmp;
@@ -135,40 +150,43 @@ namespace ft
 			return y;
 		}
 
-		Node<T> *insert_node(Node<T> *node, value_type data)
+		//위치 찾기 (이미 존재하는지, 존재하지 않는지)
+		//넣어
+		//balance 맞춤 -> avl
+		node_type *insert_node(node_type *root, value_type &data)
 		{
 			//difference between the height of the left subtree and right subtree
 			int balance_factor;
 
-			// Find the correct postion and insert the node
-			if (node == NULL)
+			// Find the correct postion and create the node
+			if (root == NULL)
 				return (create_node(data));
-			if (data < node->_data)
-				node->_left = insert_node(node->_left, data);
-			else if (data < node->_data)
-				node->_right = insert_node(node->_right, data);
+			if (_key_comp(data.first, root->_data->first))
+				root->_left = insert_node(root->_left, data);
+			else if (_key_comp(root->_data->first, data.first))
+				root->_right = insert_node(root->_right, data);
 			else
-				return node;
+				return root;
 			// Update the balance factor of each node and Balance the tree
-			node->_height = 1 + max(height(node->_left), height(node->_right));
+			root->_height = 1 + max(height(root->_left), height(root->_right));
 
-			balance_factor = get_balance_factor(node);
+			balance_factor = get_balance_factor(root);
 			if (balance_factor > 1)
 			{
-				if (data > node->_left->_data)
-					node->_left = left_rotate(node->_left);
-				return right_rotate(node);
+				if (_key_comp(root->_left->_data, data))
+					root->_left = left_rotate(root->_left);
+				return right_rotate(root);
 			}
 			if (balance_factor < -1)
 			{
-				if (data < node->_right->_data)
-					node->_right = right_rotate(node->_right);
-				return left_rotate(node);
+				if (data < root->_right->_data)
+					root->_right = right_rotate(root->_right);
+				return left_rotate(root);
 			}
-			return node;
+			return root;
 		}
 
-		Node<T> *delete_node(Node<T> *node, value_type data)
+		node_type *delete_node(node_type *node, value_type data)
 		{
 			int balance_factor;
 
@@ -182,7 +200,7 @@ namespace ft
 			{
 				if ((node->left == NULL) || (node->right == NULL))
 				{
-					Node<T> *tmp = node->_left ? node->_left : node->_right;
+					node_type *tmp = node->_left ? node->_left : node->_right;
 					if (tmp == NULL)
 					{
 						tmp = node;
@@ -194,7 +212,7 @@ namespace ft
 				}
 				else
 				{
-					Node<T> *tmp = find_min_node(node->_right);
+					node_type *tmp = find_min_node(node->_right);
 					node->_data = tmp->_data;
 					node->right = delete_node(node->_right, tmp->_data);
 				}
