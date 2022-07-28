@@ -9,56 +9,63 @@ namespace ft
 	struct Node
 	{
 		//type define
-		typedef T	value_type;
+		typedef T value_type;
 
 		//elements
-		value_type*		_data;
-		Node*			_parent;
-		Node*			_left;
-		Node*			_right;
-		int				_height;
+		value_type *_data;
+		Node *_parent;
+		Node *_left;
+		Node *_right;
+		int _height;
+		bool& _available;
 	};
 
-	template <class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<Node<ft::pair<const Key, T> > > >
+	template <class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<T> >
 	class AVLTree
 	{
 	private:
-		typedef Compare		key_compare;
-		typedef Alloc		allocator_type;
+		typedef Compare key_compare;
+		typedef Alloc allocator_type;
 
-		typedef ft::pair<const Key, T>		value_type;
-		typedef Node<value_type> 			node_type;
-		typedef Node<value_type>*			node_pointer;
-		typedef Alloc						allocator_node;
+		typedef ft::pair<const Key, T> value_type;
+		typedef Node<value_type> node_type;
+		typedef Node<value_type> *node_pointer;
+		typedef Alloc allocator_value;
 
 	public:
-		//allocator_type	_alloc;
-		allocator_node	_alloc_node;
-		key_compare		_key_comp;
-		node_type*		_root;
-		
+		typedef typename Alloc::template rebind<node_type>::other _alloc_node;
+		allocator_value _alloc_value;
+		key_compare _key_comp;
+		node_type *_root;
+
 		AVLTree() : _root(0) {}
 		AVLTree(const AVLTree &other) : _root(other._root) {}
 		AVLTree(node_type &root) : _root(root) {}
 		AVLTree &operator=(const AVLTree &other)
 		{
-			this->_alloc = other._alloc;
+			this->_alloc_value = other._alloc_value;
 			this->_alloc_node = other._alloc_node;
-			this->_comp = other._comp;
+			this->_key_comp = other._key_comp;
 			this->_root = other._root;
 		}
-		~AVLTree() 
-		{
 
+		bool  operator==(AVLTree const& other) const{
+      		return (this->_root == other._root);
+    	}
+
+    	bool  operator!=(AVLTree const& other) const{
+      		return (this->_root != other._root);
+    	}
+
+		~AVLTree()
+		{
 		}
 
-
-	private:
-		node_type* create_node(value_type &data)
+		node_type *create_node(value_type &data)
 		{
-			node_type* new_node = _alloc_node.allocate(1);
+			node_type *new_node = _alloc_node.allocate(1);
 
-			_alloc.construct(new_node->_data, data);
+			_alloc_value.construct(new_node->_data, data);
 			new_node->_parent = 0;
 			new_node->_left = 0;
 			new_node->_right = 0;
@@ -67,7 +74,7 @@ namespace ft
 			return new_node;
 		}
 
-		int height(node_type* node)
+		int height(node_type *node)
 		{
 			if (node == NULL)
 				return 0;
@@ -121,7 +128,6 @@ namespace ft
 		//            / \                                  / \           |
 		//           A   B                                B   C          |
 
-
 		node_type *right_rotate(node_type *y)
 		{
 			node_type *x = y->_left;
@@ -168,8 +174,8 @@ namespace ft
 			else
 				return root;
 			// Update the balance factor of each node and Balance the tree
+			
 			root->_height = 1 + max(height(root->_left), height(root->_right));
-
 			balance_factor = get_balance_factor(root);
 			if (balance_factor > 1)
 			{
@@ -179,65 +185,101 @@ namespace ft
 			}
 			if (balance_factor < -1)
 			{
-				if (data < root->_right->_data)
+				if (_key_comp(data, root->_right->_data))
 					root->_right = right_rotate(root->_right);
 				return left_rotate(root);
 			}
 			return root;
 		}
 
-		node_type *delete_node(node_type *node, value_type data)
+		node_type *delete_node(node_type *root, value_type data)
 		{
 			int balance_factor;
 
-			if (node == NULL)
-				return node;
-			if (data < node->_data)
-				node->_left = delete_node(node->left, data);
-			else if (data > node->_data)
-				node->_right = delete_node(node->_right, data);
+			if (root == NULL)
+				return root;
+			if (_key_comp(data, root->_data))
+				root->_left = delete_node(root->left, data);
+			else if (_key_comp(root->_data, data))
+				root->_right = delete_node(root->_right, data);
 			else
 			{
-				if ((node->left == NULL) || (node->right == NULL))
+				if ((root->left == NULL) || (root->right == NULL))
 				{
-					node_type *tmp = node->_left ? node->_left : node->_right;
+					node_type *tmp = root->_left ? root->_left : root->_right;
 					if (tmp == NULL)
 					{
-						tmp = node;
-						node = NULL;
+						tmp = root;
+						root = NULL;
 					}
 					else
-						*node = *tmp;
-					free(tmp);
+					{ 
+						//*root = *tmp;
+						//free(tmp);
+						root->_left = tmp->_left;
+						root->_right = tmp->_right;
+						root->_height = tmp->_height;
+						root->_available = tmp->_available;
+						_alloc_value.destroy(root->_data);
+						_alloc_value.construct(root->_data, tmp->_data);
+					}
+					_alloc_value.deallocate(tmp->_data, 1);
+					_alloc_node.deallocate(tmp, 1);
 				}
 				else
 				{
-					node_type *tmp = find_min_node(node->_right);
-					node->_data = tmp->_data;
-					node->right = delete_node(node->_right, tmp->_data);
+					node_type *tmp = find_min_node(root->_right);
+					//root->_data = tmp->_data;
+					_alloc_value.destroy(root->_data);
+					_alloc_value.construct(root->_data, tmp->_data);
+					root->right = delete_node(root->_right, tmp->_data);
 				}
 			}
-			if (node == NULL)
-				return node;
+			if (root == NULL)
+				return root;
 			// Update the balance factor of each node and
 			// balance the tree
-			node->_height = 1 + max(height(node->_left), height(node->right));
 
-			balance_factor = get_balance_factor(node);
+			root->_height = 1 + max(height(root->_left), height(root->right));
+			balance_factor = get_balance_factor(root);
 			if (balance_factor > 1)
 			{
-				if (balance_factor < 0)
-					node->_left = left_rotate(node->_left);
-				return right_rotate(node);
+				if (get_balance_factor(root->_left) >= 0)
+					return right_rotate(root);
+				else
+				{
+					root->_left = left_rotate(root->_left);
+					return right_rotate(root);
+				}
 			}
 			if (balance_factor < -1)
 			{
-				balance_factor = get_balance_factor(node->_right);
-				if (balance_factor > 0)
-					node->_right = right_rotate(node->_right);
-				return left_rotate(node);
+				if (get_balance_factor(root->_right) <= 0)
+					return left_rotate(root);
+				else
+				{
+					root->_right = right_rotate(root->_right);
+					return left_rotate(root);
+				}
 			}
-			return node;
+			return root;
+		}
+
+		 // bool& _available
+		node_type* find_node(node_type *root, const key_type &key) const
+		{
+			if (!root){
+                // 새로 넣어야하는 경우
+                // _available = true;
+				return NULL;
+            }
+			if (_key_comp(root->_data->_first, key))
+				return (find_node(root->_right, key));
+			else if (_key_comp(key, root->_data->_first))
+				return (find_node(root->_left, key));
+            // 이미 있는 경우
+            // _available = false;
+			return root;
 		}
 
 	};
